@@ -3,6 +3,7 @@ package Photo.project.photofilter.Presentation.Photos
 import Photo.project.photofilter.Domain.Models.PhotoItem
 import Photo.project.photofilter.Domain.Models.UseCasePack
 import Photo.project.photofilter.PhotoFilter
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -24,17 +25,25 @@ class PhotosViewModel : ViewModel() {
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     fun getPhotos(){
-        viewModelScope.launch {
-            useCasePack.getPhotos.invoke().collect{photolist ->
-                _photos.value = photolist
+        try {
+            viewModelScope.launch {
+                useCasePack.getPhotos.invoke().collect { photolist ->
+                    _photos.value = photolist
+                }
             }
+        }catch (exception : Exception){
+            Log.d("photos viewmodel", exception.message.toString())
         }
     }
 
     fun savePhoto(name : String ,url : String){
-        val photoItem = PhotoItem(url,name.substringAfterLast("/"))
-        viewModelScope.launch {
-            useCasePack.savePhotoItem.invoke(photoItem)
+        try {
+            val photoItem = PhotoItem(url, name.substringAfterLast("/"))
+            viewModelScope.launch {
+                useCasePack.savePhotoItem.invoke(photoItem)
+            }
+        }catch (exception : Exception){
+            Log.d("photos viewmodel", exception.message.toString())
         }
     }
 }

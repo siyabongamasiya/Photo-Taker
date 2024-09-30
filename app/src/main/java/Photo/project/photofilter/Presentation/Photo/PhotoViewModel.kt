@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Environment
+import android.util.Log
 import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
@@ -32,25 +33,33 @@ class PhotoViewModel : ViewModel() {
 
 
     fun deletePhoto(name : String ,url : String,context: Photo){
-        val photoItem = PhotoItem(url,name)
-        viewModelScope.launch {
-            useCasePack.deletePhotoItem.invoke(photoItem)
-            withContext(Dispatchers.Main){
-                Toast.makeText(PhotoFilter.context,"Success!!",Toast.LENGTH_SHORT).show()
+        try {
+            val photoItem = PhotoItem(url, name)
+            viewModelScope.launch {
+                useCasePack.deletePhotoItem.invoke(photoItem)
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(PhotoFilter.context, "Success!!", Toast.LENGTH_SHORT).show()
 
-                val intent = Intent(context,MainActivity :: class.java)
-                context.startActivity(intent)
+                    val intent = Intent(context, MainActivity::class.java)
+                    context.startActivity(intent)
+                }
             }
+        }catch (exception : Exception){
+            Log.d("photo viewmodel", exception.message.toString())
         }
     }
 
     fun sharePhoto(uri: String,context : Context){
-        val intent = Intent(Intent.ACTION_SEND).apply {
-            setType("image/*")
-            putExtra(Intent.EXTRA_STREAM,Uri.parse(uri))
-            putExtra(Intent.EXTRA_COMPONENT_NAME,"Share using..")
-        }
+        try {
+            val intent = Intent(Intent.ACTION_SEND).apply {
+                setType("image/*")
+                putExtra(Intent.EXTRA_STREAM, Uri.parse(uri))
+                putExtra(Intent.EXTRA_COMPONENT_NAME, "Share using..")
+            }
 
-        context.startActivity(Intent.createChooser(intent,null))
+            context.startActivity(Intent.createChooser(intent, null))
+        }catch (exception : Exception){
+            Log.d("photo viewmodel", exception.message.toString())
+        }
     }
 }
