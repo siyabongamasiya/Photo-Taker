@@ -10,3 +10,5 @@ Skills Demonstrated
 2.Room
 
 3.Glide
+
+4.MVVM
